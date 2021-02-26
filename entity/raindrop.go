@@ -8,3 +8,11 @@ type Raindrop struct {
 	// Link defines the link of the bookmark.
 	Link string `json:"link"`
 }
+
+// Collection defines the data tyope for a collection.
+type Collection struct {
+	// ID defines the collection's ID.
+	ID int64 `json:"_id"`
+	// Name defines collection's name.
+	Name string `json:"name"`
+}
