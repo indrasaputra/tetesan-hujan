@@ -99,6 +99,22 @@ func TestRaindropCreator_Create(t *testing.T) {
 
 		assert.Nil(t, err)
 	})
+
+	t.Run("successfully save a raindrop with same name of collection", func(t *testing.T) {
+		exec := createRaindropCreatorExecutor(ctrl)
+		raindrop := createValidRaindrop()
+
+		colls := []*entity.Collection{
+			{ID: 1, Name: "dummy"},
+			{ID: 2, Name: "leArniNg"},
+		}
+		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), raindrop, int64(2)).Return(nil)
+
+		err := exec.usecase.Create(context.Background(), raindrop)
+
+		assert.Nil(t, err)
+	})
 }
 
 func createValidRaindrop() *entity.Raindrop {
