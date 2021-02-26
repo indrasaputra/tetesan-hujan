@@ -4,9 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/indrasaputra/tetesan-hujan/entity"
-
 	"github.com/golang/mock/gomock"
+	"github.com/indrasaputra/tetesan-hujan/entity"
 	mock_usecase "github.com/indrasaputra/tetesan-hujan/test/mock/usecase"
 	"github.com/indrasaputra/tetesan-hujan/usecase"
 	"github.com/pkg/errors"
@@ -52,11 +51,27 @@ func TestRaindropCreator_Create(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "GetCollections returns error")
 	})
+
+	t.Run("collections don't exist", func(t *testing.T) {
+		exec := createRaindropCreatorExecutor(ctrl)
+
+		colls := []*entity.Collection{
+			{ID: 1, Name: "dummy"},
+			{ID: 2, Name: "noname"},
+		}
+		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
+
+		rd := createValidRaindrop()
+		err := exec.usecase.Create(context.Background(), rd)
+
+		assert.NotNil(t, err)
+		assert.Contains(t, err.Error(), "Collection Learning is not found")
+	})
 }
 
 func createValidRaindrop() *entity.Raindrop {
 	return &entity.Raindrop{
-		CollectionName: "collection",
+		CollectionName: "Learning",
 		Link:           "http://raindrop.io",
 	}
 }
