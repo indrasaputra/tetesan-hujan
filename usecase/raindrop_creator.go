@@ -2,9 +2,11 @@ package usecase
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/indrasaputra/tetesan-hujan/entity"
+	"github.com/pkg/errors"
 )
 
 // CreateRaindrop defines the business logic to create a new raindrop.
@@ -18,8 +20,8 @@ type CreateRaindrop interface {
 type RaindropRepository interface {
 	// GetCollections gets all root collections.
 	GetCollections(ctx context.Context) ([]*entity.Collection, error)
-	// SaveRaindrop saves a raindrop.
-	SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop) error
+	// SaveRaindrop saves a raindrop to specific collection.
+	SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop, collectionID int64) error
 }
 
 // RaindropCreator responsibles for raindrop creation workflow.
@@ -41,5 +43,22 @@ func (rc *RaindropCreator) Create(ctx context.Context, raindrop *entity.Raindrop
 	if raindrop == nil {
 		return errors.New("Raindrop is nil")
 	}
-	return nil
+
+	colls, err := rc.repo.GetCollections(ctx)
+	if err != nil {
+		return errors.Wrap(err, "GetCollections returns error")
+	}
+
+	collID := int64(0)
+	for _, coll := range colls {
+		if strings.ToLower(coll.Name) == strings.ToLower(raindrop.CollectionName) {
+			collID = coll.ID
+			break
+		}
+	}
+	if collID == int64(0) {
+		return fmt.Errorf("Collection %s is not found", raindrop.CollectionName)
+	}
+
+	return rc.repo.SaveRaindrop(ctx, raindrop, collID)
 }
