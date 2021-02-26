@@ -1,6 +1,7 @@
 package usecase_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -21,6 +22,20 @@ func TestNewRaindropCreator(t *testing.T) {
 	t.Run("successfully create an instance of RaindropCreator", func(t *testing.T) {
 		exec := createRaindropCreatorExecutor(ctrl)
 		assert.NotNil(t, exec.usecase)
+	})
+}
+
+func TestRaindropCreator_Create(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	t.Run("empty/nil raindrop is prohibited", func(t *testing.T) {
+		exec := createRaindropCreatorExecutor(ctrl)
+
+		err := exec.usecase.Create(context.Background(), nil)
+
+		assert.NotNil(t, err)
+		assert.Contains(t, "Raindrop is nil", err.Error())
 	})
 }
 
