@@ -45,8 +45,8 @@ func TestRaindropCreator_Create(t *testing.T) {
 
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(nil, errors.New("repository closed"))
 
-		rd := createValidRaindrop()
-		err := exec.usecase.Create(context.Background(), rd)
+		raindrop := createValidRaindrop()
+		err := exec.usecase.Create(context.Background(), raindrop)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "GetCollections returns error")
@@ -61,11 +61,27 @@ func TestRaindropCreator_Create(t *testing.T) {
 		}
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 
-		rd := createValidRaindrop()
-		err := exec.usecase.Create(context.Background(), rd)
+		raindrop := createValidRaindrop()
+		err := exec.usecase.Create(context.Background(), raindrop)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "Collection Learning is not found")
+	})
+
+	t.Run("raindrop save returns error", func(t *testing.T) {
+		exec := createRaindropCreatorExecutor(ctrl)
+		raindrop := createValidRaindrop()
+
+		colls := []*entity.Collection{
+			{ID: 1, Name: "dummy"},
+			{ID: 2, Name: "Learning"},
+		}
+		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), raindrop, int64(2)).Return(errors.New("repository closed"))
+
+		err := exec.usecase.Create(context.Background(), raindrop)
+
+		assert.NotNil(t, err)
 	})
 }
 
