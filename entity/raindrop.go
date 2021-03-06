@@ -8,6 +8,19 @@ type Bookmark struct {
 	URL string `json:"url"`
 }
 
+// Raindrop defines the data structure to save a bookmark in raindrop.io.
+type Raindrop struct {
+	// Title defines the raindrop's title.
+	Title string `json:"title"`
+	// Excerpt defines the raindrop's excerpt.
+	Excerpt string `json:"excerpt"`
+	// Link defines the bookmark's link.
+	// Link is better to be set via parsedURL.meta.canonical.
+	Link string `json:"link"`
+	// CollectionID defines in which collection the raindrop will save the bookmark.
+	CollectionID int64 `json:"collectionID"`
+}
+
 // ParsedURL defines the result of parsed URL from Raindrop.
 type ParsedURL struct {
 	// Result defines the parse URL result.
