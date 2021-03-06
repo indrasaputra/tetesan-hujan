@@ -50,16 +50,31 @@ func (mr *MockRaindropRepositoryMockRecorder) GetCollections(ctx interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCollections", reflect.TypeOf((*MockRaindropRepository)(nil).GetCollections), ctx)
 }
 
-// SaveRaindrop mocks base method
-func (m *MockRaindropRepository) SaveRaindrop(ctx context.Context, bookmark *entity.Bookmark, collectionID int64) error {
+// ParseURL mocks base method
+func (m *MockRaindropRepository) ParseURL(ctx context.Context, url string) (*entity.ParsedURL, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRaindrop", ctx, bookmark, collectionID)
+	ret := m.ctrl.Call(m, "ParseURL", ctx, url)
+	ret0, _ := ret[0].(*entity.ParsedURL)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ParseURL indicates an expected call of ParseURL
+func (mr *MockRaindropRepositoryMockRecorder) ParseURL(ctx, url interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseURL", reflect.TypeOf((*MockRaindropRepository)(nil).ParseURL), ctx, url)
+}
+
+// SaveRaindrop mocks base method
+func (m *MockRaindropRepository) SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveRaindrop", ctx, raindrop)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveRaindrop indicates an expected call of SaveRaindrop
-func (mr *MockRaindropRepositoryMockRecorder) SaveRaindrop(ctx, bookmark, collectionID interface{}) *gomock.Call {
+func (mr *MockRaindropRepositoryMockRecorder) SaveRaindrop(ctx, raindrop interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRaindrop", reflect.TypeOf((*MockRaindropRepository)(nil).SaveRaindrop), ctx, bookmark, collectionID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRaindrop", reflect.TypeOf((*MockRaindropRepository)(nil).SaveRaindrop), ctx, raindrop)
 }
