@@ -45,8 +45,8 @@ func TestRaindropCreator_Create(t *testing.T) {
 
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(nil, errors.New("repository closed"))
 
-		raindrop := createValidRaindrop()
-		err := exec.usecase.Create(context.Background(), raindrop)
+		bookmark := createValidBookmark()
+		err := exec.usecase.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "GetCollections returns error")
@@ -61,8 +61,8 @@ func TestRaindropCreator_Create(t *testing.T) {
 		}
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 
-		raindrop := createValidRaindrop()
-		err := exec.usecase.Create(context.Background(), raindrop)
+		bookmark := createValidBookmark()
+		err := exec.usecase.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "Collection Learning is not found")
@@ -70,55 +70,55 @@ func TestRaindropCreator_Create(t *testing.T) {
 
 	t.Run("raindrop save returns error", func(t *testing.T) {
 		exec := createRaindropCreatorExecutor(ctrl)
-		raindrop := createValidRaindrop()
+		bookmark := createValidBookmark()
 
 		colls := []*entity.Collection{
 			{ID: 1, Name: "dummy"},
 			{ID: 2, Name: "Learning"},
 		}
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
-		exec.repo.EXPECT().SaveRaindrop(context.Background(), raindrop, int64(2)).Return(errors.New("repository closed"))
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), bookmark, int64(2)).Return(errors.New("repository closed"))
 
-		err := exec.usecase.Create(context.Background(), raindrop)
+		err := exec.usecase.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
 	})
 
 	t.Run("successfully save a raindrop with exact name of collection", func(t *testing.T) {
 		exec := createRaindropCreatorExecutor(ctrl)
-		raindrop := createValidRaindrop()
+		bookmark := createValidBookmark()
 
 		colls := []*entity.Collection{
 			{ID: 1, Name: "dummy"},
 			{ID: 2, Name: "Learning"},
 		}
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
-		exec.repo.EXPECT().SaveRaindrop(context.Background(), raindrop, int64(2)).Return(nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), bookmark, int64(2)).Return(nil)
 
-		err := exec.usecase.Create(context.Background(), raindrop)
+		err := exec.usecase.Create(context.Background(), bookmark)
 
 		assert.Nil(t, err)
 	})
 
 	t.Run("successfully save a raindrop with same name of collection", func(t *testing.T) {
 		exec := createRaindropCreatorExecutor(ctrl)
-		raindrop := createValidRaindrop()
+		bookmark := createValidBookmark()
 
 		colls := []*entity.Collection{
 			{ID: 1, Name: "dummy"},
 			{ID: 2, Name: "leArniNg"},
 		}
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
-		exec.repo.EXPECT().SaveRaindrop(context.Background(), raindrop, int64(2)).Return(nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), bookmark, int64(2)).Return(nil)
 
-		err := exec.usecase.Create(context.Background(), raindrop)
+		err := exec.usecase.Create(context.Background(), bookmark)
 
 		assert.Nil(t, err)
 	})
 }
 
-func createValidRaindrop() *entity.Raindrop {
-	return &entity.Raindrop{
+func createValidBookmark() *entity.Bookmark {
+	return &entity.Bookmark{
 		CollectionName: "Learning",
 		Link:           "http://raindrop.io",
 	}
