@@ -51,15 +51,15 @@ func (mr *MockRaindropRepositoryMockRecorder) GetCollections(ctx interface{}) *g
 }
 
 // SaveRaindrop mocks base method
-func (m *MockRaindropRepository) SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop, collectionID int64) error {
+func (m *MockRaindropRepository) SaveRaindrop(ctx context.Context, bookmark *entity.Bookmark, collectionID int64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRaindrop", ctx, raindrop, collectionID)
+	ret := m.ctrl.Call(m, "SaveRaindrop", ctx, bookmark, collectionID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveRaindrop indicates an expected call of SaveRaindrop
-func (mr *MockRaindropRepositoryMockRecorder) SaveRaindrop(ctx, raindrop, collectionID interface{}) *gomock.Call {
+func (mr *MockRaindropRepositoryMockRecorder) SaveRaindrop(ctx, bookmark, collectionID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRaindrop", reflect.TypeOf((*MockRaindropRepository)(nil).SaveRaindrop), ctx, raindrop, collectionID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRaindrop", reflect.TypeOf((*MockRaindropRepository)(nil).SaveRaindrop), ctx, bookmark, collectionID)
 }
