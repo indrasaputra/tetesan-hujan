@@ -11,6 +11,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type collectionWrapper struct {
+	Items []struct {
+		ID    int64  `json:"_id"`
+		Title string `json:"title"`
+	} `json:"items"`
+}
+
 // API responsibles to connect to Raindrop.io.
 type API struct {
 	client  *http.Client
@@ -37,12 +44,12 @@ func (a *API) GetCollections(ctx context.Context) ([]*entity.Collection, error) 
 	}
 	defer resp.Body.Close()
 
-	var colls []*entity.Collection
-	if jerr := json.NewDecoder(resp.Body).Decode(&colls); jerr != nil {
+	var wrapper collectionWrapper
+	if jerr := json.NewDecoder(resp.Body).Decode(&wrapper); jerr != nil {
 		return []*entity.Collection{}, jerr
 	}
 
-	return colls, nil
+	return convertWrapperToCollections(wrapper), nil
 }
 
 // ParseURL parse an URL to get detailed information from raindrop.io.
@@ -82,4 +89,12 @@ func (a *API) SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop) error
 	var tmp interface{}
 	json.NewDecoder(resp.Body).Decode(&tmp)
 	return fmt.Errorf("[SaveRaindrop] errors: %v", tmp)
+}
+
+func convertWrapperToCollections(wrapper collectionWrapper) []*entity.Collection {
+	var colls []*entity.Collection
+	for _, item := range wrapper.Items {
+		colls = append(colls, &entity.Collection{ID: item.ID, Name: item.Title})
+	}
+	return colls
 }

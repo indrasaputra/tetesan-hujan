@@ -37,7 +37,7 @@ type ParsedURL struct {
 	} `json:"item"`
 }
 
-// Collection defines the data tyope for a collection.
+// Collection defines the data type for a collection.
 type Collection struct {
 	// ID defines the collection's ID.
 	ID int64 `json:"_id"`
