@@ -23,8 +23,6 @@ type Raindrop struct {
 
 // ParsedURL defines the result of parsed URL from Raindrop.
 type ParsedURL struct {
-	// Result defines the parse URL result.
-	Result bool `json:"result"`
 	// Error defines the parse URL error.
 	Error string `json:"error"`
 	Item  struct {
