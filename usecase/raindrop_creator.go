@@ -9,19 +9,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-// CreateRaindrop defines the business logic to create a new raindrop.
-type CreateRaindrop interface {
-	// Create creates a new raindrop.
-	Create(ctx context.Context, raindrop *entity.Raindrop) error
+// CreateBookmark defines the business logic to create a new bookmark.
+type CreateBookmark interface {
+	// Create creates a new bookmark.
+	Create(ctx context.Context, bookmark *entity.Bookmark) error
 }
 
-// RaindropRepository defines the business logic to save a raindrop.
-// It has two methods which are explained in their documentation.
+// RaindropRepository defines the business logic to save a bookmark in raindrop.io.
 type RaindropRepository interface {
 	// GetCollections gets all root collections.
 	GetCollections(ctx context.Context) ([]*entity.Collection, error)
-	// SaveRaindrop saves a raindrop to specific collection.
-	SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop, collectionID int64) error
+	// SaveRaindrop saves a bookmark to specific collection in raindrop.io.
+	SaveRaindrop(ctx context.Context, bookmark *entity.Bookmark, collectionID int64) error
 }
 
 // RaindropCreator responsibles for raindrop creation workflow.
@@ -36,11 +35,11 @@ func NewRaindropCreator(repo RaindropRepository) *RaindropCreator {
 	}
 }
 
-// Create creates a new raindrop.
-// First, it will check whether the collection in which the raindrop will be saved exists.
-// If it exists, raindrop will be saved. Otherwise, it returns error.
-func (rc *RaindropCreator) Create(ctx context.Context, raindrop *entity.Raindrop) error {
-	if raindrop == nil {
+// Create creates a new bookmark.
+// First, it will check whether the collection in which the bookmark will be saved exists.
+// If it exists, bookmark will be saved. Otherwise, it returns error.
+func (rc *RaindropCreator) Create(ctx context.Context, bookmark *entity.Bookmark) error {
+	if bookmark == nil {
 		return errors.New("Raindrop is nil")
 	}
 
@@ -51,14 +50,14 @@ func (rc *RaindropCreator) Create(ctx context.Context, raindrop *entity.Raindrop
 
 	collID := int64(0)
 	for _, coll := range colls {
-		if strings.ToLower(coll.Name) == strings.ToLower(raindrop.CollectionName) {
+		if strings.ToLower(coll.Name) == strings.ToLower(bookmark.CollectionName) {
 			collID = coll.ID
 			break
 		}
 	}
 	if collID == int64(0) {
-		return fmt.Errorf("Collection %s is not found", raindrop.CollectionName)
+		return fmt.Errorf("Collection %s is not found", bookmark.CollectionName)
 	}
 
-	return rc.repo.SaveRaindrop(ctx, raindrop, collID)
+	return rc.repo.SaveRaindrop(ctx, bookmark, collID)
 }
