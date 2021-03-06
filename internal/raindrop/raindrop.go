@@ -48,12 +48,7 @@ func (a *API) GetCollections(ctx context.Context) ([]*entity.Collection, error) 
 // ParseURL parse an URL to get detailed information from raindrop.io.
 func (a *API) ParseURL(ctx context.Context, url string) (*entity.ParsedURL, error) {
 	reqURL := fmt.Sprintf("%s/import/url/parse?url=%s", a.baseURL, url)
-	req, rerr := http.NewRequest(http.MethodGet, reqURL, nil)
-	if rerr != nil {
-		return nil, rerr
-	}
-
-	resp, derr := a.client.Do(req)
+	resp, derr := a.client.Get(reqURL)
 	if derr != nil {
 		return nil, derr
 	}
