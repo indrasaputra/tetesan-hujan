@@ -120,7 +120,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 func createValidBookmark() *entity.Bookmark {
 	return &entity.Bookmark{
 		CollectionName: "Learning",
-		Link:           "http://raindrop.io",
+		URL:            "http://raindrop.io",
 	}
 }
 
