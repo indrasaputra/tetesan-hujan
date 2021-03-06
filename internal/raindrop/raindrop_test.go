@@ -66,11 +66,67 @@ func TestAPI_GetCollections(t *testing.T) {
 	})
 }
 
+func TestAPI_ParseURL(t *testing.T) {
+	t.Run("http call returns error", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			panic("collapse")
+		}))
+		defer server.Close()
+
+		api := createRaindropAPI(server.Client(), server.URL)
+		url, err := api.ParseURL(context.Background(), "http://url.url")
+
+		assert.NotNil(t, err)
+		assert.Nil(t, url)
+	})
+
+	t.Run("response can't be marshalled", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			rw.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		api := createRaindropAPI(server.Client(), server.URL)
+		url, err := api.ParseURL(context.Background(), "http://url.url")
+
+		assert.NotNil(t, err)
+		assert.Nil(t, url)
+	})
+
+	t.Run("success parse url", func(t *testing.T) {
+		parsed := createParsedURL()
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			b, _ := json.Marshal(parsed)
+			rw.Write(b)
+			rw.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		api := createRaindropAPI(server.Client(), server.URL)
+		url, err := api.ParseURL(context.Background(), "http://url.url")
+
+		assert.Nil(t, err)
+		assert.NotNil(t, url)
+		assert.Equal(t, parsed, url)
+	})
+}
+
 func createCollections() []*entity.Collection {
 	return []*entity.Collection{
 		&entity.Collection{ID: 1, Name: "Collection-1"},
 		&entity.Collection{ID: 2, Name: "Collection-2"},
 	}
+}
+
+func createParsedURL() *entity.ParsedURL {
+	url := &entity.ParsedURL{
+		Error: "",
+	}
+	url.Item.Title = "http://url.url"
+	url.Item.Excerpt = "just a dummy url"
+	url.Item.Meta.Canonical = "http://url.url"
+
+	return url
 }
 
 func createRaindropAPI(client *http.Client, url string) *raindrop.API {
