@@ -18,7 +18,7 @@ type Raindrop struct {
 	// Link is better to be set via parsedURL.meta.canonical.
 	Link string `json:"link"`
 	// CollectionID defines in which collection the raindrop will save the bookmark.
-	CollectionID int64 `json:"collectionID"`
+	CollectionID int64 `json:"collectionId"`
 }
 
 // ParsedURL defines the result of parsed URL from Raindrop.
