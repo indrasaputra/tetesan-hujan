@@ -49,10 +49,10 @@ func TestAPI_GetCollections(t *testing.T) {
 	})
 
 	t.Run("success get collections", func(t *testing.T) {
+		wrapper := createCollectionWrapper()
 		collections := createCollections()
 		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-			b, _ := json.Marshal(collections)
-			rw.Write(b)
+			rw.Write([]byte(wrapper))
 			rw.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
@@ -157,6 +157,10 @@ func createCollections() []*entity.Collection {
 		&entity.Collection{ID: 1, Name: "Collection-1"},
 		&entity.Collection{ID: 2, Name: "Collection-2"},
 	}
+}
+
+func createCollectionWrapper() string {
+	return `{"items":[{"_id":1,"title":"Collection-1"},{"_id":2,"title":"Collection-2"}]}`
 }
 
 func createParsedURL() *entity.ParsedURL {
