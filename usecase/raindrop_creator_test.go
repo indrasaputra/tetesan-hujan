@@ -37,7 +37,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		err := exec.usecase.Create(context.Background(), nil)
 
 		assert.NotNil(t, err)
-		assert.Contains(t, err.Error(), "Raindrop is nil")
+		assert.Contains(t, err.Error(), "Bookmark is nil")
 	})
 
 	t.Run("GetCollections returns error", func(t *testing.T) {
@@ -49,7 +49,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		err := exec.usecase.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
-		assert.Contains(t, err.Error(), "GetCollections returns error")
+		assert.Contains(t, err.Error(), "[GetCollections] returns error")
 	})
 
 	t.Run("collections don't exist", func(t *testing.T) {
@@ -68,7 +68,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		assert.Contains(t, err.Error(), "Collection Learning is not found")
 	})
 
-	t.Run("raindrop save returns error", func(t *testing.T) {
+	t.Run("ParseURL process returns error", func(t *testing.T) {
 		exec := createRaindropCreatorExecutor(ctrl)
 		bookmark := createValidBookmark()
 
@@ -77,7 +77,48 @@ func TestRaindropCreator_Create(t *testing.T) {
 			{ID: 2, Name: "Learning"},
 		}
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
-		exec.repo.EXPECT().SaveRaindrop(context.Background(), bookmark, int64(2)).Return(errors.New("repository closed"))
+		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(nil, errors.New("parser closed"))
+
+		err := exec.usecase.Create(context.Background(), bookmark)
+
+		assert.NotNil(t, err)
+		assert.Contains(t, err.Error(), "[ParseURL] returns error")
+	})
+
+	t.Run("ParseURL body has an error", func(t *testing.T) {
+		exec := createRaindropCreatorExecutor(ctrl)
+		bookmark := createValidBookmark()
+
+		colls := []*entity.Collection{
+			{ID: 1, Name: "dummy"},
+			{ID: 2, Name: "Learning"},
+		}
+		url := createValidParsedURL()
+		url.Error = "try_again"
+
+		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
+		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
+
+		err := exec.usecase.Create(context.Background(), bookmark)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, err.Error(), "[ParseURL] URL is invalid/problematic thus get error from Raindrop: try_again")
+	})
+
+	t.Run("raindrop save returns error", func(t *testing.T) {
+		exec := createRaindropCreatorExecutor(ctrl)
+		bookmark := createValidBookmark()
+
+		colls := []*entity.Collection{
+			{ID: 1, Name: "dummy"},
+			{ID: 2, Name: "Learning"},
+		}
+		url := createValidParsedURL()
+		rd := createValidRaindrop(url, bookmark, int64(2))
+
+		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
+		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(errors.New("repository closed"))
 
 		err := exec.usecase.Create(context.Background(), bookmark)
 
@@ -92,8 +133,12 @@ func TestRaindropCreator_Create(t *testing.T) {
 			{ID: 1, Name: "dummy"},
 			{ID: 2, Name: "Learning"},
 		}
+		url := createValidParsedURL()
+		rd := createValidRaindrop(url, bookmark, int64(2))
+
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
-		exec.repo.EXPECT().SaveRaindrop(context.Background(), bookmark, int64(2)).Return(nil)
+		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(nil)
 
 		err := exec.usecase.Create(context.Background(), bookmark)
 
@@ -108,20 +153,92 @@ func TestRaindropCreator_Create(t *testing.T) {
 			{ID: 1, Name: "dummy"},
 			{ID: 2, Name: "leArniNg"},
 		}
+		url := createValidParsedURL()
+		rd := createValidRaindrop(url, bookmark, int64(2))
+
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
-		exec.repo.EXPECT().SaveRaindrop(context.Background(), bookmark, int64(2)).Return(nil)
+		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(nil)
 
 		err := exec.usecase.Create(context.Background(), bookmark)
 
 		assert.Nil(t, err)
+	})
+
+	t.Run("successfully save a raindrop with link from bookmark", func(t *testing.T) {
+		exec := createRaindropCreatorExecutor(ctrl)
+		bookmark := createValidBookmark()
+
+		colls := []*entity.Collection{
+			{ID: 1, Name: "dummy"},
+			{ID: 2, Name: "Learning"},
+		}
+		url := createValidParsedURL()
+		url.Item.Meta.Canonical = ""
+		rd := createValidRaindrop(url, bookmark, int64(2))
+
+		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
+		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(nil)
+
+		err := exec.usecase.Create(context.Background(), bookmark)
+
+		assert.Nil(t, err)
+		assert.Equal(t, bookmark.URL, rd.Link)
+	})
+
+	t.Run("successfully save a raindrop with link from canonical", func(t *testing.T) {
+		exec := createRaindropCreatorExecutor(ctrl)
+		bookmark := createValidBookmark()
+
+		colls := []*entity.Collection{
+			{ID: 1, Name: "dummy"},
+			{ID: 2, Name: "Learning"},
+		}
+		url := createValidParsedURL()
+		rd := createValidRaindrop(url, bookmark, int64(2))
+
+		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
+		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
+		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(nil)
+
+		err := exec.usecase.Create(context.Background(), bookmark)
+
+		assert.Nil(t, err)
+		assert.Equal(t, url.Item.Meta.Canonical, rd.Link)
 	})
 }
 
 func createValidBookmark() *entity.Bookmark {
 	return &entity.Bookmark{
 		CollectionName: "Learning",
-		URL:            "http://raindrop.io",
+		URL:            "https://raindrop.io",
 	}
+}
+
+func createValidParsedURL() *entity.ParsedURL {
+	url := &entity.ParsedURL{
+		Error: "",
+	}
+	url.Item.Title = "Raindrop.io website"
+	url.Item.Excerpt = "raindrop.io is bookmark saver"
+	url.Item.Meta.Canonical = "https://raindrop.io/canonical"
+
+	return url
+}
+
+func createValidRaindrop(url *entity.ParsedURL, bookmark *entity.Bookmark, collectionID int64) *entity.Raindrop {
+	rd := &entity.Raindrop{
+		Title:        url.Item.Title,
+		Excerpt:      url.Item.Excerpt,
+		Link:         bookmark.URL,
+		CollectionID: collectionID,
+	}
+
+	if url.Item.Meta.Canonical != "" {
+		rd.Link = url.Item.Meta.Canonical
+	}
+	return rd
 }
 
 func createRaindropCreatorExecutor(ctrl *gomock.Controller) *RaindropCreator_Executor {
