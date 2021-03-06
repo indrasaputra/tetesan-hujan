@@ -19,8 +19,10 @@ type CreateBookmark interface {
 type RaindropRepository interface {
 	// GetCollections gets all root collections.
 	GetCollections(ctx context.Context) ([]*entity.Collection, error)
-	// SaveRaindrop saves a bookmark to specific collection in raindrop.io.
-	SaveRaindrop(ctx context.Context, bookmark *entity.Bookmark, collectionID int64) error
+	// ParseURL parses the bookmark's URL to get detailed information of the URL.
+	ParseURL(ctx context.Context, url string) (*entity.ParsedURL, error)
+	// SaveRaindrop saves a raindrop bookmark to specific collection in raindrop.io.
+	SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop) error
 }
 
 // RaindropCreator responsibles for raindrop creation workflow.
@@ -40,12 +42,12 @@ func NewRaindropCreator(repo RaindropRepository) *RaindropCreator {
 // If it exists, bookmark will be saved. Otherwise, it returns error.
 func (rc *RaindropCreator) Create(ctx context.Context, bookmark *entity.Bookmark) error {
 	if bookmark == nil {
-		return errors.New("Raindrop is nil")
+		return errors.New("Bookmark is nil")
 	}
 
-	colls, err := rc.repo.GetCollections(ctx)
-	if err != nil {
-		return errors.Wrap(err, "GetCollections returns error")
+	colls, cerr := rc.repo.GetCollections(ctx)
+	if cerr != nil {
+		return errors.Wrap(cerr, "[GetCollections] returns error")
 	}
 
 	collID := int64(0)
@@ -59,5 +61,28 @@ func (rc *RaindropCreator) Create(ctx context.Context, bookmark *entity.Bookmark
 		return fmt.Errorf("Collection %s is not found", bookmark.CollectionName)
 	}
 
-	return rc.repo.SaveRaindrop(ctx, bookmark, collID)
+	url, perr := rc.repo.ParseURL(ctx, bookmark.URL)
+	if perr != nil {
+		return errors.Wrap(perr, "[ParseURL] returns error")
+	}
+	if url.Error != "" {
+		return fmt.Errorf("[ParseURL] URL is invalid/problematic thus get error from Raindrop: %s", url.Error)
+	}
+	rd := createRaindrop(url, bookmark, collID)
+
+	return rc.repo.SaveRaindrop(ctx, rd)
+}
+
+func createRaindrop(url *entity.ParsedURL, bookmark *entity.Bookmark, collectionID int64) *entity.Raindrop {
+	rd := &entity.Raindrop{
+		Title:        url.Item.Title,
+		Excerpt:      url.Item.Excerpt,
+		Link:         bookmark.URL,
+		CollectionID: collectionID,
+	}
+
+	if url.Item.Meta.Canonical != "" {
+		rd.Link = url.Item.Meta.Canonical
+	}
+	return rd
 }
