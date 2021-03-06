@@ -4,8 +4,8 @@ package entity
 type Bookmark struct {
 	// CollectionName defines in which collection the bookmark is saved.
 	CollectionName string `json:"collection_name"`
-	// Link defines the link of the bookmark.
-	Link string `json:"link"`
+	// URL defines the url of the bookmark.
+	URL string `json:"url"`
 }
 
 // ParsedURL defines the result of parsed URL from Raindrop.
