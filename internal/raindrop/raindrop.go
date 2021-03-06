@@ -31,12 +31,7 @@ func NewAPI(baseURL, token string) *API {
 
 // GetCollections gets all root collections from raindrop.io
 func (a *API) GetCollections(ctx context.Context) ([]*entity.Collection, error) {
-	req, rerr := http.NewRequest(http.MethodGet, a.baseURL+"/collections", nil)
-	if rerr != nil {
-		return []*entity.Collection{}, rerr
-	}
-
-	resp, derr := a.client.Do(req)
+	resp, derr := a.client.Get(a.baseURL + "/collections")
 	if derr != nil {
 		return []*entity.Collection{}, derr
 	}
