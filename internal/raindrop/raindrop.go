@@ -69,12 +69,7 @@ func (a *API) SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop) error
 		return fmt.Errorf("Marshal serror")
 	}
 
-	req, rerr := http.NewRequest(http.MethodPost, a.baseURL+"/raindrop", bytes.NewBuffer(body))
-	if rerr != nil {
-		return rerr
-	}
-
-	resp, derr := a.client.Do(req)
+	resp, derr := a.client.Post(a.baseURL+"/raindrop", "application/json", bytes.NewBuffer(body))
 	if derr != nil {
 		return derr
 	}

@@ -111,6 +111,47 @@ func TestAPI_ParseURL(t *testing.T) {
 	})
 }
 
+func TestAPI_SaveRaindrop(t *testing.T) {
+	t.Run("http call returns error", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			panic("collapse")
+		}))
+		defer server.Close()
+
+		api := createRaindropAPI(server.Client(), server.URL)
+		rd := createRaindrop()
+		err := api.SaveRaindrop(context.Background(), rd)
+
+		assert.NotNil(t, err)
+	})
+
+	t.Run("response code is not between 200 and 299", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			rw.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer server.Close()
+
+		api := createRaindropAPI(server.Client(), server.URL)
+		rd := createRaindrop()
+		err := api.SaveRaindrop(context.Background(), rd)
+
+		assert.NotNil(t, err)
+	})
+
+	t.Run("success save raindrop", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			rw.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		api := createRaindropAPI(server.Client(), server.URL)
+		rd := createRaindrop()
+		err := api.SaveRaindrop(context.Background(), rd)
+
+		assert.Nil(t, err)
+	})
+}
+
 func createCollections() []*entity.Collection {
 	return []*entity.Collection{
 		&entity.Collection{ID: 1, Name: "Collection-1"},
@@ -127,6 +168,15 @@ func createParsedURL() *entity.ParsedURL {
 	url.Item.Meta.Canonical = "http://url.url"
 
 	return url
+}
+
+func createRaindrop() *entity.Raindrop {
+	return &entity.Raindrop{
+		Title:        "all URLs in one place",
+		Excerpt:      "an application you want to visit",
+		Link:         "http://url.url",
+		CollectionID: 1,
+	}
 }
 
 func createRaindropAPI(client *http.Client, url string) *raindrop.API {
