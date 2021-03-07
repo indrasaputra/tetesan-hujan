@@ -50,17 +50,17 @@ func (b *Bot) setupTextHandler() {
 	b.Handle(telebot.OnText, func(message *telebot.Message) {
 		texts := strings.Split(message.Text, " ")
 		if len(texts) != 2 {
-			b.Send(message.Sender, "I only receive text containing collection name and URL")
+			b.Reply(message, "I only receive text containing collection name and URL")
 			return
 		}
 
 		bookmark := &entity.Bookmark{CollectionName: texts[0], URL: texts[1]}
 		if err := b.bookmarker.Create(context.Background(), bookmark); err != nil {
 			msg := fmt.Sprintf("Error on saving bookmark: %s", err.Error())
-			b.Send(message.Sender, msg)
+			b.Reply(message, msg)
 			return
 		}
-		b.Send(message.Sender, "Bookmark saved! Visit your raindrop application to see it")
+		b.Reply(message, "Bookmark saved! Visit your raindrop application to see it")
 	})
 }
 
