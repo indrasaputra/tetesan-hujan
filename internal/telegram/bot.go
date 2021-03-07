@@ -14,6 +14,7 @@ type Bot struct {
 	*telebot.Bot
 	ownerID    int
 	bookmarker usecase.CreateBookmark
+	webhook    *telebot.Webhook
 }
 
 // NewBot creates an instance of Telegram Bot.
@@ -25,20 +26,23 @@ func NewBot(webhookURL, token string, ownerID int, bookmarker usecase.CreateBook
 	}
 
 	setting := telebot.Settings{
-		Token:  token,
-		Poller: webhook,
+		Token: token,
 	}
 
 	bot, err := telebot.NewBot(setting)
-	return &Bot{bot, ownerID, bookmarker}, err
+	if err != nil {
+		return nil, err
+	}
+	bot.Poller = webhook
+	return &Bot{bot, ownerID, bookmarker, webhook}, err
 }
 
 // Run runs Telegram Bot.
-func (b *Bot) Run() (*telebot.Webhook, error) {
+func (b *Bot) Run() *telebot.Webhook {
 	b.setupMiddleware()
 	b.setupTextHandler()
 	go b.Start()
-	return b.GetWebhook()
+	return b.webhook
 }
 
 func (b *Bot) setupTextHandler() {
