@@ -36,7 +36,11 @@ func NewBot(webhookURL, token string, ownerID int, bookmarker usecase.CreateBook
 // Run runs Telegram Bot.
 func (b *Bot) Run() {
 	b.setupMiddleware()
+	b.setupTextHandler()
+	b.Start()
+}
 
+func (b *Bot) setupTextHandler() {
 	b.Handle(telebot.OnText, func(message *telebot.Message) {
 		texts := strings.Split(message.Text, " ")
 		if len(texts) != 2 {
@@ -51,8 +55,6 @@ func (b *Bot) Run() {
 		}
 		b.Send(message.Sender, "Bookmark saved! Visit your raindrop application to see it")
 	})
-
-	b.Start()
 }
 
 func (b *Bot) setupMiddleware() {
