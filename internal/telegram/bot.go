@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/indrasaputra/tetesan-hujan/entity"
@@ -55,7 +56,8 @@ func (b *Bot) setupTextHandler() {
 
 		bookmark := &entity.Bookmark{CollectionName: texts[0], URL: texts[1]}
 		if err := b.bookmarker.Create(context.Background(), bookmark); err != nil {
-			b.Send(message.Sender, "Error on saving bookmark: %s", err.Error())
+			msg := fmt.Sprintf("Error on saving bookmark: %s", err.Error())
+			b.Send(message.Sender, msg)
 			return
 		}
 		b.Send(message.Sender, "Bookmark saved! Visit your raindrop application to see it")
