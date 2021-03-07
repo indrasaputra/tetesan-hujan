@@ -13,10 +13,17 @@ type Telegram struct {
 	Token      string `env:"TELEGRAM_TOKEN,required"`
 }
 
+// Raindrop holds configuration related to Raindrop API.
+type Raindrop struct {
+	BaseURL string `env:"RAINDROP_BASE_URL,required"`
+	Token   string `env:"RAINDROP_TOKEN,required"`
+}
+
 // Config holds configuration for the project.
 type Config struct {
 	Port     string `env:"PORT,default=8080"`
 	Telegram Telegram
+	Raindrop Raindrop
 }
 
 // NewConfig creates an instance of Config.
