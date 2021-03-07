@@ -19,8 +19,7 @@ func main() {
 	bot, berr := telegram.NewBot(cfg.Telegram.WebhookURL, cfg.Telegram.Token, cfg.Telegram.OwnerID, creator)
 	checkError(berr)
 
-	webhook, werr := bot.Run()
-	checkError(werr)
+	webhook := bot.Run()
 
 	http.HandleFunc("/", webhook.ServeHTTP)
 	fmt.Printf("Listening on port %s\n", cfg.Port)
