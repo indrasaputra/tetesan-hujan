@@ -34,10 +34,11 @@ func NewBot(webhookURL, token string, ownerID int, bookmarker usecase.CreateBook
 }
 
 // Run runs Telegram Bot.
-func (b *Bot) Run() {
+func (b *Bot) Run() (*telebot.Webhook, error) {
 	b.setupMiddleware()
 	b.setupTextHandler()
-	b.Start()
+	go b.Start()
+	return b.GetWebhook()
 }
 
 func (b *Bot) setupTextHandler() {
