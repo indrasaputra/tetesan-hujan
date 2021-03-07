@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/indrasaputra/tetesan-hujan/internal/config"
 	"github.com/indrasaputra/tetesan-hujan/internal/raindrop"
 	"github.com/indrasaputra/tetesan-hujan/internal/telegram"
@@ -16,7 +19,12 @@ func main() {
 	bot, berr := telegram.NewBot(cfg.Telegram.WebhookURL, cfg.Telegram.Token, cfg.Telegram.OwnerID, creator)
 	checkError(berr)
 
-	bot.Run()
+	webhook, werr := bot.Run()
+	checkError(werr)
+
+	http.HandleFunc("/", webhook.ServeHTTP)
+	fmt.Printf("Listening on port %s\n", cfg.Port)
+	http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), http.DefaultServeMux)
 }
 
 func checkError(err error) {
