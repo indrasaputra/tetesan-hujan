@@ -12,11 +12,12 @@ import (
 // Bot acts as Telegram Bot.
 type Bot struct {
 	*telebot.Bot
+	ownerID    int
 	bookmarker usecase.CreateBookmark
 }
 
 // NewBot creates an instance of Telegram Bot.
-func NewBot(webhookURL, token string, bookmarker usecase.CreateBookmark) (*Bot, error) {
+func NewBot(webhookURL, token string, ownerID int, bookmarker usecase.CreateBookmark) (*Bot, error) {
 	webhook := &telebot.Webhook{
 		Endpoint: &telebot.WebhookEndpoint{
 			PublicURL: webhookURL,
@@ -29,11 +30,13 @@ func NewBot(webhookURL, token string, bookmarker usecase.CreateBookmark) (*Bot, 
 	}
 
 	bot, err := telebot.NewBot(setting)
-	return &Bot{bot, bookmarker}, err
+	return &Bot{bot, ownerID, bookmarker}, err
 }
 
 // Run runs Telegram Bot.
 func (b *Bot) Run() {
+	b.setupMiddleware()
+
 	b.Handle(telebot.OnText, func(message *telebot.Message) {
 		texts := strings.Split(message.Text, " ")
 		if len(texts) != 2 {
@@ -50,4 +53,15 @@ func (b *Bot) Run() {
 	})
 
 	b.Start()
+}
+
+func (b *Bot) setupMiddleware() {
+	midd := telebot.NewMiddlewarePoller(b.Poller, func(update *telebot.Update) bool {
+		if update.Message.Sender.ID != b.ownerID {
+			b.Send(update.Message.Sender, "You are not my master. I only serve my master")
+			return false
+		}
+		return true
+	})
+	b.Poller = midd
 }
