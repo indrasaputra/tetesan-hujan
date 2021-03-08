@@ -27,7 +27,7 @@ jobs:
   
   deploy:
     name: build, push, and deploy
-    if: github.repository == 'indrasaputra/tetesan-hujan' && github.ref == 'refs/heads/docker' && github.event_name == 'push'
+    if: github.repository == 'indrasaputra/tetesan-hujan' && github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: [unit-test]
     steps:
