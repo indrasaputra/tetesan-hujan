@@ -6,4 +6,5 @@ RUN make compile
 FROM alpine:3.13
 WORKDIR /app
 COPY --from=builder /app/tetesan-hujan-bot .
+EXPOSE 8080
 CMD ["/app/tetesan-hujan-bot"]
