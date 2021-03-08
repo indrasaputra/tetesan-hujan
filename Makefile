@@ -18,3 +18,6 @@ cover:
 coverhtml:
 	go test -v -race ./... -coverprofile=coverage.out
 	go tool cover -html=coverage.out
+
+compile:
+	env GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o tetesan-hujan cmd/bot/main.go
