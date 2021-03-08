@@ -54,7 +54,7 @@ func (b *Bot) setupTextHandler() {
 			return
 		}
 
-		bookmark := &entity.Bookmark{CollectionName: texts[0], URL: texts[1]}
+		bookmark := &entity.Bookmark{CollectionName: texts[1], URL: texts[0]}
 		if err := b.bookmarker.Create(context.Background(), bookmark); err != nil {
 			msg := fmt.Sprintf("Error on saving bookmark: %s", err.Error())
 			b.Reply(message, msg)
