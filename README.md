@@ -15,6 +15,23 @@ Its main purpose is currently to save a bookmark for my own purpose.
 
 [Indra Saputra](https://github.com/indrasaputra)
 
+## Usage
+
+Send exactly two strings separated by a space to [@tetesan_hujan_bot](t.me/tetesan_hujan_bot) in Telegram.
+The first string represents the link and the second represents the collection/category in which the link will be saved in [Raindrop.io](https://raindrop.io/).
+
+For example, the link is `https://queue.acm.org/detail.cfm?id=3197520` and collection is `learning`. Then, the message in Telegram will be:
+![Tetesan Hujan Example](https://user-images.githubusercontent.com/4661221/110271587-efffc380-7ffa-11eb-830c-2b18d62133b5.png)
+
+## Caveat
+
+To use this bot, make sure you have the access to use the bot (it is set by `TELEGRAM_OWNER_ID` environment variable).
+Since the original purpose is my own usage only, the [@tetesan_hujan_bot](t.me/tetesan_hujan_bot) is only available for me.
+If you want to use the bot, please follow the [Development](#development) and [Deployment](#deployment) sections.
+
+The bot is heavily depends on [Raindrop API](https://developer.raindrop.io/).
+Thus, any latency will be depends on [Raindrop API](https://developer.raindrop.io/) latency.
+
 ## Development
 
 - Install Go
@@ -47,7 +64,10 @@ Its main purpose is currently to save a bookmark for my own purpose.
 
 - Go to project folder
 
-    Usually, it would be `cd go/src/github.com/indrasaputra/tetesan-hujan`.
+    Usually, it would be
+    ```
+    $ cd go/src/github.com/indrasaputra/tetesan-hujan
+    ```
 
 - Fill in the environment variables
 
