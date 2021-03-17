@@ -45,32 +45,48 @@ func (rc *RaindropCreator) Create(ctx context.Context, bookmark *entity.Bookmark
 		return errors.New("Bookmark is nil")
 	}
 
-	colls, cerr := rc.repo.GetCollections(ctx)
+	collID, cerr := rc.getCollectionID(ctx, bookmark.CollectionName)
 	if cerr != nil {
-		return errors.Wrap(cerr, "[GetCollections] returns error")
+		return cerr
+	}
+
+	url, perr := rc.parseURL(ctx, bookmark.URL)
+	if perr != nil {
+		return perr
+	}
+
+	rd := createRaindrop(url, bookmark, collID)
+	return rc.repo.SaveRaindrop(ctx, rd)
+}
+
+func (rc *RaindropCreator) getCollectionID(ctx context.Context, collectionName string) (int64, error) {
+	colls, err := rc.repo.GetCollections(ctx)
+	if err != nil {
+		return 0, errors.Wrap(err, "[GetCollections] returns error")
 	}
 
 	collID := int64(0)
 	for _, coll := range colls {
-		if strings.ToLower(coll.Name) == strings.ToLower(bookmark.CollectionName) {
+		if strings.ToLower(coll.Name) == strings.ToLower(collectionName) {
 			collID = coll.ID
 			break
 		}
 	}
 	if collID == int64(0) {
-		return fmt.Errorf("Collection %s is not found", bookmark.CollectionName)
+		return 0, fmt.Errorf("Collection %s is not found", collectionName)
 	}
+	return collID, nil
+}
 
-	url, perr := rc.repo.ParseURL(ctx, bookmark.URL)
-	if perr != nil {
-		return errors.Wrap(perr, "[ParseURL] returns error")
+func (rc *RaindropCreator) parseURL(ctx context.Context, url string) (*entity.ParsedURL, error) {
+	parsed, err := rc.repo.ParseURL(ctx, url)
+	if err != nil {
+		return nil, errors.Wrap(err, "[ParseURL] returns error")
 	}
-	if url.Error != "" {
-		return fmt.Errorf("[ParseURL] URL is invalid/problematic thus get error from Raindrop: %s", url.Error)
+	if parsed.Error != "" {
+		return nil, fmt.Errorf("[ParseURL] URL is invalid/problematic thus get error from Raindrop: %s", parsed.Error)
 	}
-	rd := createRaindrop(url, bookmark, collID)
-
-	return rc.repo.SaveRaindrop(ctx, rd)
+	return parsed, nil
 }
 
 func createRaindrop(url *entity.ParsedURL, bookmark *entity.Bookmark, collectionID int64) *entity.Raindrop {
