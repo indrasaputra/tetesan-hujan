@@ -154,8 +154,8 @@ func TestAPI_SaveRaindrop(t *testing.T) {
 
 func createCollections() []*entity.Collection {
 	return []*entity.Collection{
-		&entity.Collection{ID: 1, Name: "Collection-1"},
-		&entity.Collection{ID: 2, Name: "Collection-2"},
+		{ID: 1, Name: "Collection-1"},
+		{ID: 2, Name: "Collection-2"},
 	}
 }
 
