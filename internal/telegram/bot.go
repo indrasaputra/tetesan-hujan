@@ -10,6 +10,10 @@ import (
 	telebot "gopkg.in/tucnak/telebot.v2"
 )
 
+const (
+	numberOfWord = 2
+)
+
 // Bot acts as Telegram Bot.
 type Bot struct {
 	*telebot.Bot
@@ -49,7 +53,7 @@ func (b *Bot) Run() *telebot.Webhook {
 func (b *Bot) setupTextHandler() {
 	b.Handle(telebot.OnText, func(message *telebot.Message) {
 		texts := strings.Split(message.Text, " ")
-		if len(texts) != 2 {
+		if len(texts) != numberOfWord {
 			b.Reply(message, "I only receive text containing collection name and URL")
 			return
 		}
