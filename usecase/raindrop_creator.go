@@ -73,7 +73,7 @@ func (rc *RaindropCreator) getCollectionID(ctx context.Context, collectionName s
 		}
 	}
 	if collID == int64(0) {
-		return 0, fmt.Errorf("Collection %s is not found", collectionName)
+		return 0, fmt.Errorf("collection %s is not found", collectionName)
 	}
 	return collID, nil
 }

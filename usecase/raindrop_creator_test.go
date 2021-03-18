@@ -65,7 +65,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		err := exec.usecase.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
-		assert.Contains(t, err.Error(), "Collection Learning is not found")
+		assert.Contains(t, err.Error(), "collection Learning is not found")
 	})
 
 	t.Run("ParseURL process returns error", func(t *testing.T) {

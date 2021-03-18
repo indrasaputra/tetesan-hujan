@@ -73,7 +73,7 @@ func (a *API) ParseURL(ctx context.Context, url string) (*entity.ParsedURL, erro
 func (a *API) SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop) error {
 	body, merr := json.Marshal(raindrop)
 	if merr != nil {
-		return fmt.Errorf("Marshal serror")
+		return fmt.Errorf("marshal serror")
 	}
 
 	resp, derr := a.client.Post(a.baseURL+"/raindrop", "application/json", bytes.NewBuffer(body))
