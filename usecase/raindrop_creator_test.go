@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type RaindropCreator_Executor struct {
+type RaindropCreatorExecutor struct {
 	usecase *usecase.RaindropCreator
 	repo    *mock_usecase.MockRaindropRepository
 }
@@ -242,11 +242,11 @@ func createValidRaindrop(url *entity.ParsedURL, bookmark *entity.Bookmark, colle
 	return rd
 }
 
-func createRaindropCreatorExecutor(ctrl *gomock.Controller) *RaindropCreator_Executor {
+func createRaindropCreatorExecutor(ctrl *gomock.Controller) *RaindropCreatorExecutor {
 	r := mock_usecase.NewMockRaindropRepository(ctrl)
 	u := usecase.NewRaindropCreator(r)
 
-	return &RaindropCreator_Executor{
+	return &RaindropCreatorExecutor{
 		usecase: u,
 		repo:    r,
 	}
