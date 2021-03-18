@@ -92,9 +92,9 @@ func (a *API) SaveRaindrop(ctx context.Context, raindrop *entity.Raindrop) error
 }
 
 func convertWrapperToCollections(wrapper collectionWrapper) []*entity.Collection {
-	var colls []*entity.Collection
-	for _, item := range wrapper.Items {
-		colls = append(colls, &entity.Collection{ID: item.ID, Name: item.Title})
+	colls := make([]*entity.Collection, len(wrapper.Items))
+	for i, item := range wrapper.Items {
+		colls[i] = &entity.Collection{ID: item.ID, Name: item.Title}
 	}
 	return colls
 }
