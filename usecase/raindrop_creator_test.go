@@ -108,13 +108,14 @@ func TestRaindropCreator_Create(t *testing.T) {
 	t.Run("raindrop save returns error", func(t *testing.T) {
 		exec := createRaindropCreatorExecutor(ctrl)
 		bookmark := createValidBookmark()
+		bookmark.CollectionName = "dummy"
 
 		colls := []*entity.Collection{
 			{ID: 1, Name: "dummy"},
 			{ID: 2, Name: "Learning"},
 		}
 		url := createValidParsedURL()
-		rd := createValidRaindrop(url, bookmark, int64(2))
+		rd := createValidRaindrop(url, bookmark, 1)
 
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
@@ -134,7 +135,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 			{ID: 2, Name: "Learning"},
 		}
 		url := createValidParsedURL()
-		rd := createValidRaindrop(url, bookmark, int64(2))
+		rd := createValidRaindrop(url, bookmark, 2)
 
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
@@ -154,7 +155,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 			{ID: 2, Name: "leArniNg"},
 		}
 		url := createValidParsedURL()
-		rd := createValidRaindrop(url, bookmark, int64(2))
+		rd := createValidRaindrop(url, bookmark, 2)
 
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
@@ -175,7 +176,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		}
 		url := createValidParsedURL()
 		url.Item.Meta.Canonical = ""
-		rd := createValidRaindrop(url, bookmark, int64(2))
+		rd := createValidRaindrop(url, bookmark, 2)
 
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
@@ -196,7 +197,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 			{ID: 2, Name: "Learning"},
 		}
 		url := createValidParsedURL()
-		rd := createValidRaindrop(url, bookmark, int64(2))
+		rd := createValidRaindrop(url, bookmark, 2)
 
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
