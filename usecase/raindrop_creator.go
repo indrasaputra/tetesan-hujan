@@ -67,7 +67,7 @@ func (rc *RaindropCreator) getCollectionID(ctx context.Context, collectionName s
 
 	collID := int64(0)
 	for _, coll := range colls {
-		if strings.ToLower(coll.Name) == strings.ToLower(collectionName) {
+		if strings.EqualFold(coll.Name, collectionName) {
 			collID = coll.ID
 			break
 		}
