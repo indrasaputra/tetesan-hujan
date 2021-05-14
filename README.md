@@ -4,6 +4,7 @@
 [![Workflow](https://github.com/indrasaputra/tetesan-hujan/workflows/Test/badge.svg)](https://github.com/indrasaputra/tetesan-hujan/actions)
 [![codecov](https://codecov.io/gh/indrasaputra/tetesan-hujan/branch/main/graph/badge.svg?token=R17RPYS094)](https://codecov.io/gh/indrasaputra/tetesan-hujan)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e2e45026960fb8cf7725/maintainability)](https://codeclimate.com/github/indrasaputra/tetesan-hujan/maintainability)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=indrasaputra_tetesan-hujan&metric=alert_status)](https://sonarcloud.io/dashboard?id=indrasaputra_tetesan-hujan)
 [![Go Reference](https://pkg.go.dev/badge/github.com/indrasaputra/tetesan-hujan.svg)](https://pkg.go.dev/github.com/indrasaputra/tetesan-hujan)
 
 ## Description
@@ -59,7 +60,7 @@ Thus, any latency will be depends on [Raindrop API](https://developer.raindrop.i
     
     Use HTTP
     ```
-    https://github.com/indrasaputra/tetesan-hujan.git
+    $ https://github.com/indrasaputra/tetesan-hujan.git
     ```
 
 - Go to project folder
@@ -73,31 +74,31 @@ Thus, any latency will be depends on [Raindrop API](https://developer.raindrop.i
 
     Copy the sample env file.
     ```
-    cp env.sample .env
+    $ cp env.sample .env
     ```
     Then, fill the values according to your setting in `.env` file.
 
 - Download the dependencies
 
     ```
-    make dep-download
+    $ make dep-download
     ```
     or run this command if you don't have `make` installed in your local.
     ```
-    go mod download 
+    $ go mod download 
     ```
 
 - Run the application
 
     ```
-    go run cmd/bot/main.go
+    $ go run cmd/bot/main.go
     ```
 
 - Expose your localhost to the internet
 
     Usually, I use [https://ngrok.com/](https://ngrok.com/)
     ```
-    ngrok http $PORT
+    $ ngrok http $PORT
     ```
 
 - Send some messages to your bot in Telegram.
