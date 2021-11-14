@@ -50,4 +50,5 @@ jobs:
           heroku_app_name: tetesan-hujan
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           branch: ${{ github.ref_name }}
+          remote_branch: ${{ github.ref_name }}
           appdir: cmd/bot
