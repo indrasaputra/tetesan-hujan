@@ -27,9 +27,3 @@ coverhtml:
 
 compile:
 	env GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o tetesan-hujan-bot cmd/bot/main.go
-
-build-docker:
-	docker build -t asia.gcr.io/tetesan-hujan/tetesan-hujan-bot:v0.0.1 -f Dockerfile .
-
-push-docker:
-	docker push asia.gcr.io/tetesan-hujan/tetesan-hujan-bot:v0.0.1

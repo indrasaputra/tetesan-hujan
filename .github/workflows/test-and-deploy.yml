@@ -1,9 +1,6 @@
 name: Test and Deploy
 
 on: [push, pull_request]
-
-env:
-  SERVICE_NAME: tetesan-hujan-bot
   
 jobs:
   code-lint:
@@ -15,7 +12,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.38.0
+          version: v1.42.1
 
   unit-test:
     name: unit test and coverage
@@ -24,7 +21,7 @@ jobs:
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.16.x
+          go-version: ^1.17.x
       
       - name: Checkout code
         uses: actions/checkout@v2
@@ -35,40 +32,18 @@ jobs:
         uses: codecov/codecov-action@v1.0.13
   
   deploy:
-    name: build, push, and deploy
+    name: deployment
     if: github.repository == 'indrasaputra/tetesan-hujan' && github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    needs: [unit-test]
+    needs: [unit-test, code-lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Setup Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
+      
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          export_default_credentials: true
-        
-      - name: Authorize Docker push
-        run: gcloud auth configure-docker
-        
-      - name: Build and Push Container
-        run: |-
-          docker build -t ${{ secrets.CONTAINER_REGISTRY_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{  github.sha }} -f Dockerfile .
-          docker push ${{ secrets.CONTAINER_REGISTRY_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{  github.sha }}
-
-      - name: Deploy to Cloud Run
-        run: |-
-          gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --project ${{ secrets.GCP_PROJECT_ID }} \
-            --image ${{ secrets.CONTAINER_REGISTRY_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{  github.sha }} \
-            --region ${{ secrets.GCP_REGION }} \
-            --platform managed \
-            --port ${{ secrets.PORT }} \
-            --allow-unauthenticated \
-            --set-env-vars "TELEGRAM_OWNER_ID=${{ secrets.TELEGRAM_OWNER_ID }}" \
-            --set-env-vars "TELEGRAM_WEBHOOK_URL=${{ secrets.TELEGRAM_WEBHOOK_URL }}" \
-            --set-env-vars "TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }}" \
-            --set-env-vars "RAINDROP_BASE_URL=${{ secrets.RAINDROP_BASE_URL }}" \
-            --set-env-vars "RAINDROP_TOKEN=${{ secrets.RAINDROP_TOKEN }}"
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: tetesan-hujan
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: cmd/bot

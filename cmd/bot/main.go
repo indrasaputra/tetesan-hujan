@@ -22,8 +22,14 @@ func main() {
 	webhook := bot.Run()
 
 	http.HandleFunc("/", webhook.ServeHTTP)
+	http.HandleFunc("/healthz", healthzHandler)
 	fmt.Printf("Listening on port %s\n", cfg.Port)
 	http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), http.DefaultServeMux)
+}
+
+func healthzHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`OK`))
 }
 
 func checkError(err error) {

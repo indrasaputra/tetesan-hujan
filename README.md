@@ -105,5 +105,5 @@ Thus, any latency will be depends on [Raindrop API](https://developer.raindrop.i
 
 ## Deployment
 
-Currently, this project is deployed in [Google Cloud Run](https://cloud.google.com/run).
+Currently, this project is deployed in [Heroku](https://www.heroku.com/).
 The deployment process definiton is stated and ruled in [Github Actions](https://github.com/indrasaputra/tetesan-hujan/blob/main/.github/workflows/test-and-deploy.yml).
