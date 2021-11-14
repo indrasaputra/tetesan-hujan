@@ -36,7 +36,7 @@ jobs:
   
   deploy:
     name: deployment
-    # if: github.repository == 'indrasaputra/tetesan-hujan' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.repository == 'indrasaputra/tetesan-hujan' && github.ref == 'refs/heads/deploy-to-heroku' && github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: [unit-test, code-lint]
     steps:
@@ -49,6 +49,4 @@ jobs:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: tetesan-hujan
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          branch: ${{ github.ref_name }}
-          remote_branch: ${{ github.ref_name }}
           appdir: cmd/bot
