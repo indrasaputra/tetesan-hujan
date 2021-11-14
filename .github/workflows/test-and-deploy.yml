@@ -1,9 +1,6 @@
 name: Test and Deploy
 
 on: [push, pull_request]
-
-env:
-  SERVICE_NAME: tetesan-hujan-bot
   
 jobs:
   code-lint:
