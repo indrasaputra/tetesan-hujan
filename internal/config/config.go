@@ -8,7 +8,7 @@ import (
 
 // Telegram holds configuration related to Telegram bot.
 type Telegram struct {
-	OwnerID    int    `env:"TELEGRAM_OWNER_ID,required"`
+	OwnerID    int64  `env:"TELEGRAM_OWNER_ID,required"`
 	WebhookURL string `env:"TELEGRAM_WEBHOOK_URL,required"`
 	Token      string `env:"TELEGRAM_TOKEN,required"`
 }

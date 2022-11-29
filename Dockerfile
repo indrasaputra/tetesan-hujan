@@ -1,4 +1,4 @@
-FROM golang:1.16.0-stretch AS builder
+FROM golang:1.19.0-stretch AS builder
 WORKDIR /app
 COPY . .
 RUN make compile
