@@ -1,4 +1,4 @@
-package usecase_test
+package service_test
 
 import (
 	"context"
@@ -6,15 +6,15 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/indrasaputra/tetesan-hujan/entity"
-	mock_usecase "github.com/indrasaputra/tetesan-hujan/test/mock/usecase"
-	"github.com/indrasaputra/tetesan-hujan/usecase"
+	"github.com/indrasaputra/tetesan-hujan/internal/service"
+	mock_service "github.com/indrasaputra/tetesan-hujan/test/mock/service"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
 type RaindropCreatorExecutor struct {
-	usecase *usecase.RaindropCreator
-	repo    *mock_usecase.MockRaindropRepository
+	service *service.RaindropCreator
+	repo    *mock_service.MockRaindropRepository
 }
 
 func TestNewRaindropCreator(t *testing.T) {
@@ -23,7 +23,7 @@ func TestNewRaindropCreator(t *testing.T) {
 
 	t.Run("successfully create an instance of RaindropCreator", func(t *testing.T) {
 		exec := createRaindropCreatorExecutor(ctrl)
-		assert.NotNil(t, exec.usecase)
+		assert.NotNil(t, exec.service)
 	})
 }
 
@@ -34,7 +34,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 	t.Run("empty/nil raindrop is prohibited", func(t *testing.T) {
 		exec := createRaindropCreatorExecutor(ctrl)
 
-		err := exec.usecase.Create(context.Background(), nil)
+		err := exec.service.Create(context.Background(), nil)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "Bookmark is nil")
@@ -46,7 +46,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(nil, errors.New("repository closed"))
 
 		bookmark := createValidBookmark()
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "[GetCollections] returns error")
@@ -62,7 +62,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 
 		bookmark := createValidBookmark()
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "collection Learning is not found")
@@ -79,7 +79,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(nil, errors.New("parser closed"))
 
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "[ParseURL] returns error")
@@ -99,7 +99,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().GetCollections(context.Background()).Return(colls, nil)
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
 
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), "[ParseURL] URL is invalid/problematic thus get error from Raindrop: try_again")
@@ -121,7 +121,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
 		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(errors.New("repository closed"))
 
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.NotNil(t, err)
 	})
@@ -141,7 +141,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
 		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(nil)
 
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.Nil(t, err)
 	})
@@ -161,7 +161,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
 		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(nil)
 
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.Nil(t, err)
 	})
@@ -182,7 +182,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
 		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(nil)
 
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.Nil(t, err)
 		assert.Equal(t, bookmark.URL, rd.Link)
@@ -203,7 +203,7 @@ func TestRaindropCreator_Create(t *testing.T) {
 		exec.repo.EXPECT().ParseURL(context.Background(), bookmark.URL).Return(url, nil)
 		exec.repo.EXPECT().SaveRaindrop(context.Background(), rd).Return(nil)
 
-		err := exec.usecase.Create(context.Background(), bookmark)
+		err := exec.service.Create(context.Background(), bookmark)
 
 		assert.Nil(t, err)
 		assert.Equal(t, url.Item.Meta.Canonical, rd.Link)
@@ -243,11 +243,11 @@ func createValidRaindrop(url *entity.ParsedURL, bookmark *entity.Bookmark, colle
 }
 
 func createRaindropCreatorExecutor(ctrl *gomock.Controller) *RaindropCreatorExecutor {
-	r := mock_usecase.NewMockRaindropRepository(ctrl)
-	u := usecase.NewRaindropCreator(r)
+	r := mock_service.NewMockRaindropRepository(ctrl)
+	u := service.NewRaindropCreator(r)
 
 	return &RaindropCreatorExecutor{
-		usecase: u,
+		service: u,
 		repo:    r,
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/indrasaputra/tetesan-hujan/entity"
-	"github.com/indrasaputra/tetesan-hujan/usecase"
+	"github.com/indrasaputra/tetesan-hujan/internal/service"
 	telebot "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -17,13 +17,13 @@ const (
 // Bot acts as Telegram Bot.
 type Bot struct {
 	*telebot.Bot
-	ownerID    int
-	bookmarker usecase.CreateBookmark
+	ownerID    int64
+	bookmarker service.CreateBookmark
 	webhook    *telebot.Webhook
 }
 
 // NewBot creates an instance of Telegram Bot.
-func NewBot(webhookURL, token string, ownerID int, bookmarker usecase.CreateBookmark) (*Bot, error) {
+func NewBot(webhookURL, token string, ownerID int64, bookmarker service.CreateBookmark) (*Bot, error) {
 	webhook := &telebot.Webhook{
 		Endpoint: &telebot.WebhookEndpoint{
 			PublicURL: webhookURL,
