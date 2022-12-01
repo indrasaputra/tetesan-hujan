@@ -1,0 +1,8 @@
+name: Lint and Test
+
+on: [push, pull_request]
+
+jobs:
+  code-quality-check:
+    name: Code Quality Check
+    uses: indrasaputra/tetesan-hujan/.github/workflows/reusable-go-quality-ci.yml@deploy-using-fly
