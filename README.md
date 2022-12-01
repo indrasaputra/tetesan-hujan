@@ -37,7 +37,7 @@ Thus, any latency will be depends on [Raindrop API](https://developer.raindrop.i
 
 - Install Go
 
-    This project uses version 1.16. Follow [Golang installation guideline](https://golang.org/doc/install).
+    This project uses version 1.19. Follow [Golang installation guideline](https://golang.org/doc/install).
 
 - Create your Telegram bot
 
@@ -105,5 +105,6 @@ Thus, any latency will be depends on [Raindrop API](https://developer.raindrop.i
 
 ## Deployment
 
-Currently, this project is deployed in [Heroku](https://www.heroku.com/).
-The deployment process definiton is stated and ruled in [Heroku Dashboard](https://dashboard.heroku.com/apps/tetesan-hujan/deploy/github).
+Currently, this project is deployed in [Fly](https://fly.io/).
+The deployment process definiton is stated and ruled in [fly.toml](https://fly.io/docs/reference/configuration/)
+and run automatically using [Github Actions](https://docs.github.com/en/actions).
